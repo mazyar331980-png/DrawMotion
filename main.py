@@ -1,18 +1,27 @@
-import cv2
+from modules.png_loader import load_image
+from modules.image_preprocessor import preprocess
+from modules.edge_detector import detect_edges
+import os
 
-def detect_edges(image_path):
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+print("=" * 40)
+print("      DrawMotion Engine v0.3")
+print("=" * 40)
 
-    if image is None:
-        print("Помилка відкриття обробленого зображення.")
-        return None
+image = load_image()
 
-    edges = cv2.Canny(image, 50, 150)
+if image:
+    print("✅ Зображення успішно завантажено.")
 
-    output_path = "output/edges.png"
-    cv2.imwrite(output_path, edges)
+    folder = "input/images"
+    files = [f for f in os.listdir(folder)
+             if f.lower().endswith((".png", ".jpg", ".jpeg"))]
 
-    print("Контури знайдено.")
-    print(f"Файл збережено: {output_path}")
+    image_path = os.path.join(folder, files[0])
 
-    return output_path
+    preprocessed = preprocess(image_path)
+
+    if preprocessed:
+        detect_edges(preprocessed)
+
+else:
+    print("❌ Не вдалося завантажити зображення.")
